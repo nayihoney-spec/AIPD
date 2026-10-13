@@ -56,3 +56,30 @@
 
 ### Rollback target
 - The previous stable Vercel production deployment remains unchanged during repository bootstrap.
+
+
+## 2026-10-14 — Q3 Process Flow mapping (development candidate)
+
+### Added
+- Site / Production Line context selector in Customer Assessment Q3.
+- Line-scoped Draft Process Flow storage.
+- Admin Process Template CRUD-style controls: add, edit, duplicate, enable/disable, delete.
+- Template-in-use deletion guard.
+- Q3 mapping card in Assessment Question Mapping.
+- Eight-locale UI strings for the new Q3 controls.
+- Process Flow missing-information contribution to Completeness / Confidence.
+
+### Changed
+- Customer Process Flow is no longer one global list shared by every Production Line.
+- Applying a template copies steps into the selected line Draft instead of mutating the master template.
+
+### Removed
+- No approved Q1/Q2 behavior removed.
+
+### Unchanged
+- Current Production deployment and stable review URL.
+- Q4 Equipment data model, Q5 Data/SCADA schema and Q6 Target Schedule schema remain separate future increments.
+
+### Rollback target
+- Branch base: `product/aves-assessment-baseline` at repository bootstrap baseline.
+- Production runtime remains the previous stable Vercel deployment until this candidate is approved.
