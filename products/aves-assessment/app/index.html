@@ -1000,7 +1000,7 @@ function q3EnsureContext(){
  var all=q3AllLines();
  if(!all.length)return null;
  var found=all.find(function(x){return x.site.id===q3Context.siteId&&x.line.id===q3Context.lineId});
- if(!found){found=all[0];q3Context.siteId=found.site.id;q3Context.lineId=found.line.id}
+ if(!found){found=all.find(function(x){return x.site.id===q3Context.siteId})||all[0];q3Context.siteId=found.site.id;q3Context.lineId=found.line.id}
  return found;
 }
 function q3EnsureFlow(line){
