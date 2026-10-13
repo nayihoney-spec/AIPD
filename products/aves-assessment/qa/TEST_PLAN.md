@@ -47,3 +47,17 @@ For all supported locales:
 - Static HTML executable baseline.
 - Inline JavaScript syntax check required after every visible/logic change.
 - No production-readiness claim until persistence, authentication, authorization enforcement and API/data services are implemented and tested.
+
+
+## Q3 Process Flow mapping regression — 2026.10.14.1
+- One Site / one Line: apply template and verify expected ordered steps.
+- One Site / multiple Lines: verify each line retains an independent Process Flow.
+- Multiple Sites / multiple Lines: switch context and verify no cross-line step leakage.
+- Add/edit/delete a customer Process Step and verify the Admin template remains unchanged.
+- Duplicate an Admin template and verify a distinct template ID / independent steps.
+- Disable a template and verify it is not offered for new application while existing Draft references remain visible.
+- Attempt to delete an in-use template and verify deletion is blocked.
+- Delete an unused template and verify it disappears from Customer Q3 choices.
+- Verify missing Process Flow adds a completeness/confidence gap.
+- Run locale checks for English, Traditional Chinese, Simplified Chinese, French, Japanese, Spanish, Vietnamese and Thai on all new Q3 labels/actions.
+- Confirm Q4 Equipment behavior is unchanged except that its legacy default process-step reference may reflect the active Q3 flow; full Q4 line scoping remains out of scope for this increment.
