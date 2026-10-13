@@ -40,3 +40,22 @@ Do not overwrite historical pricing baselines. Publish new effective versions. F
 
 ## Release safety
 See `../governance/WORK_RULES.md`.
+
+
+## Process Template Library — Q3
+Admin manages Process Templates under Platform & Pricing → Process Templates.
+
+Each template contains:
+- Template name.
+- Version.
+- Ordered Process Steps.
+- Active / Disabled status.
+
+Available actions in the current development increment:
+- Add.
+- Edit.
+- Duplicate.
+- Enable / Disable.
+- Delete when the template is not referenced by a Draft Process Flow.
+
+Publishing/applying a template to Customer Q3 creates a line-scoped Process Flow copy. Later customer edits do not modify the Admin template. Disable a template to stop new use without breaking existing Draft references.
