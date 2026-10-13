@@ -52,6 +52,18 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
 #q1GuidanceTemplateChips .tag{margin:2px 5px 2px 0}
 #q1GuidancePreview{font-size:13px;line-height:1.55;color:var(--text)}
 
+
+/* Q3 Process Flow mapping — line-scoped, Admin template driven */
+.q3-context{border:1px solid var(--line);border-radius:14px;background:#fbfcff;padding:12px;margin:12px 0}
+.q3-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.q3-context .field{grid-column:auto}
+.process-step-row{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin:8px 0;background:white}
+.process-step-main{display:flex;gap:9px;align-items:center;min-width:0}
+.process-step-main b{overflow-wrap:anywhere}
+.process-template-steps{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.process-template-steps .tag{margin:0}
+@media(max-width:760px){.q3-context-grid{grid-template-columns:1fr}.process-step-row{align-items:flex-start;flex-direction:column}}
+
 </style>
 </head>
 <body>
@@ -946,5 +958,225 @@ const _setLocaleCrudBase=setLocale;
 setLocale=function(locale){_setLocaleCrudBase(locale);renderReq();renderWorkRules();setRequirementModalMode(editingRequirementIndex)};
 renderWorkRules();
 </script>\n
+
+<script>
+// ===== Q3 Process Flow mapping: Admin template -> Site/Production Line scoped customer flow =====
+(function(){
+const Q3_UI={
+ en:{site:"Site",line:"Production Line",template:"Process Template",apply:"Apply Template",custom:"Custom process",addStep:"+ Add Process Step",mapping:"Q3 · Process Flow",mappingTarget:"Process Template Library + line-scoped Process Flow",mapped:"Admin-mapped",noSteps:"No process steps yet. Apply an Admin template or add a custom step.",stepHelp:"Each production line owns its own Process Flow. Admin templates provide a controlled starting point; customer-added steps remain line-specific.",templateLibrary:"Process Template Library",versioned:"Versioned template",active:"Active",disabled:"Disabled",duplicate:"Duplicate",edit:"Edit",del:"Delete",disable:"Disable",enable:"Enable",inUse:"Template is in use by a Draft Process Flow. Disable it instead of deleting.",namePrompt:"Template name",stepsPrompt:"Process steps (comma-separated)",stepPrompt:"Process Step name",deleteStep:"Delete",removeStepConfirm:"Delete this process step?",deleteTemplateConfirm:"Delete this process template?",selectContext:"Select a Site and Production Line first.",templateApplied:"Template applied to the selected Production Line.",customBadge:"Custom / modified",templateBadge:"Template-based",processMissing:"Process Flow missing"},
+ "zh-Hant":{site:"廠區",line:"產品線",template:"製程流程模板",apply:"套用模板",custom:"自定義製程",addStep:"+ 新增製程步驟",mapping:"Q3 · 製程流程",mappingTarget:"製程模板庫 + 產品線層級製程流程",mapped:"已映射後台",noSteps:"目前尚無製程步驟。請套用後台模板或新增自定義步驟。",stepHelp:"每條產品線各自擁有一份製程流程。後台模板提供受控起始基線；客戶新增步驟只影響該產品線。",templateLibrary:"製程模板庫",versioned:"版本化模板",active:"啟用",disabled:"停用",duplicate:"複製",edit:"編輯",del:"刪除",disable:"停用",enable:"啟用",inUse:"此模板正在 Draft 製程流程中使用。請先停用，不直接刪除。",namePrompt:"模板名稱",stepsPrompt:"製程步驟（以逗號分隔）",stepPrompt:"製程步驟名稱",deleteStep:"刪除",removeStepConfirm:"刪除此製程步驟？",deleteTemplateConfirm:"刪除此製程模板？",selectContext:"請先選擇廠區及產品線。",templateApplied:"模板已套用至所選產品線。",customBadge:"自定義／已修改",templateBadge:"模板基線",processMissing:"缺少製程流程"},
+ "zh-Hans":{site:"厂区",line:"产品线",template:"工艺流程模板",apply:"套用模板",custom:"自定义工艺",addStep:"+ 新增工艺步骤",mapping:"Q3 · 工艺流程",mappingTarget:"工艺模板库 + 产品线层级工艺流程",mapped:"已映射后台",noSteps:"目前尚无工艺步骤。请套用后台模板或新增自定义步骤。",stepHelp:"每条产品线各自拥有一份工艺流程。后台模板提供受控起始基线；客户新增步骤只影响该产品线。",templateLibrary:"工艺模板库",versioned:"版本化模板",active:"启用",disabled:"停用",duplicate:"复制",edit:"编辑",del:"删除",disable:"停用",enable:"启用",inUse:"此模板正在 Draft 工艺流程中使用。请先停用，不直接删除。",namePrompt:"模板名称",stepsPrompt:"工艺步骤（逗号分隔）",stepPrompt:"工艺步骤名称",deleteStep:"删除",removeStepConfirm:"删除此工艺步骤？",deleteTemplateConfirm:"删除此工艺模板？",selectContext:"请先选择厂区和产品线。",templateApplied:"模板已套用到所选产品线。",customBadge:"自定义／已修改",templateBadge:"模板基线",processMissing:"缺少工艺流程"},
+ fr:{site:"Site",line:"Ligne de production",template:"Modèle de procédé",apply:"Appliquer le modèle",custom:"Procédé personnalisé",addStep:"+ Ajouter une étape",mapping:"Q3 · Flux de procédé",mappingTarget:"Bibliothèque de modèles + flux par ligne",mapped:"Mappé à l’Admin",noSteps:"Aucune étape de procédé. Appliquez un modèle Admin ou ajoutez une étape personnalisée.",stepHelp:"Chaque ligne possède son propre flux. Les modèles Admin fournissent une base contrôlée; les étapes client restent propres à la ligne.",templateLibrary:"Bibliothèque de modèles de procédé",versioned:"Modèle versionné",active:"Actif",disabled:"Désactivé",duplicate:"Dupliquer",edit:"Modifier",del:"Supprimer",disable:"Désactiver",enable:"Activer",inUse:"Ce modèle est utilisé par un flux Draft. Désactivez-le au lieu de le supprimer.",namePrompt:"Nom du modèle",stepsPrompt:"Étapes du procédé (séparées par des virgules)",stepPrompt:"Nom de l’étape",deleteStep:"Supprimer",removeStepConfirm:"Supprimer cette étape ?",deleteTemplateConfirm:"Supprimer ce modèle ?",selectContext:"Sélectionnez d’abord un site et une ligne.",templateApplied:"Modèle appliqué à la ligne sélectionnée.",customBadge:"Personnalisé / modifié",templateBadge:"Basé sur modèle",processMissing:"Flux de procédé manquant"},
+ ja:{site:"サイト",line:"製造ライン",template:"プロセステンプレート",apply:"テンプレート適用",custom:"カスタムプロセス",addStep:"+ プロセス工程を追加",mapping:"Q3 · プロセスフロー",mappingTarget:"プロセステンプレート + ライン別フロー",mapped:"管理設定に連携",noSteps:"プロセス工程がありません。管理テンプレートを適用するか、カスタム工程を追加してください。",stepHelp:"各製造ラインは独自のプロセスフローを持ちます。管理テンプレートは管理された初期基準で、顧客追加工程はそのラインだけに適用されます。",templateLibrary:"プロセステンプレートライブラリ",versioned:"バージョン管理テンプレート",active:"有効",disabled:"無効",duplicate:"複製",edit:"編集",del:"削除",disable:"無効化",enable:"有効化",inUse:"このテンプレートはDraftフローで使用中です。削除せず無効化してください。",namePrompt:"テンプレート名",stepsPrompt:"プロセス工程（カンマ区切り）",stepPrompt:"プロセス工程名",deleteStep:"削除",removeStepConfirm:"この工程を削除しますか？",deleteTemplateConfirm:"このテンプレートを削除しますか？",selectContext:"先にサイトと製造ラインを選択してください。",templateApplied:"選択した製造ラインにテンプレートを適用しました。",customBadge:"カスタム／変更済み",templateBadge:"テンプレート基準",processMissing:"プロセスフロー未設定"},
+ es:{site:"Sitio",line:"Línea de producción",template:"Plantilla de proceso",apply:"Aplicar plantilla",custom:"Proceso personalizado",addStep:"+ Añadir paso",mapping:"Q3 · Flujo de proceso",mappingTarget:"Biblioteca de plantillas + flujo por línea",mapped:"Mapeado al Admin",noSteps:"Aún no hay pasos. Aplique una plantilla Admin o añada un paso personalizado.",stepHelp:"Cada línea tiene su propio flujo. Las plantillas Admin proporcionan una base controlada; los pasos añadidos por el cliente permanecen en esa línea.",templateLibrary:"Biblioteca de plantillas de proceso",versioned:"Plantilla versionada",active:"Activo",disabled:"Desactivado",duplicate:"Duplicar",edit:"Editar",del:"Eliminar",disable:"Desactivar",enable:"Activar",inUse:"Esta plantilla está en uso por un flujo Draft. Desactívela en vez de eliminarla.",namePrompt:"Nombre de plantilla",stepsPrompt:"Pasos del proceso (separados por comas)",stepPrompt:"Nombre del paso",deleteStep:"Eliminar",removeStepConfirm:"¿Eliminar este paso?",deleteTemplateConfirm:"¿Eliminar esta plantilla?",selectContext:"Seleccione primero un sitio y una línea.",templateApplied:"Plantilla aplicada a la línea seleccionada.",customBadge:"Personalizado / modificado",templateBadge:"Basado en plantilla",processMissing:"Falta el flujo de proceso"},
+ vi:{site:"Nhà máy",line:"Dây chuyền sản xuất",template:"Mẫu quy trình",apply:"Áp dụng mẫu",custom:"Quy trình tùy chỉnh",addStep:"+ Thêm bước quy trình",mapping:"Q3 · Luồng quy trình",mappingTarget:"Thư viện mẫu + luồng theo dây chuyền",mapped:"Đã ánh xạ Admin",noSteps:"Chưa có bước quy trình. Hãy áp dụng mẫu Admin hoặc thêm bước tùy chỉnh.",stepHelp:"Mỗi dây chuyền có luồng quy trình riêng. Mẫu Admin cung cấp đường cơ sở có kiểm soát; bước khách hàng thêm chỉ áp dụng cho dây chuyền đó.",templateLibrary:"Thư viện mẫu quy trình",versioned:"Mẫu có phiên bản",active:"Bật",disabled:"Tắt",duplicate:"Nhân bản",edit:"Sửa",del:"Xóa",disable:"Tắt",enable:"Bật",inUse:"Mẫu này đang được Draft sử dụng. Hãy tắt thay vì xóa.",namePrompt:"Tên mẫu",stepsPrompt:"Các bước quy trình (phân cách bằng dấu phẩy)",stepPrompt:"Tên bước quy trình",deleteStep:"Xóa",removeStepConfirm:"Xóa bước này?",deleteTemplateConfirm:"Xóa mẫu này?",selectContext:"Hãy chọn nhà máy và dây chuyền trước.",templateApplied:"Đã áp dụng mẫu cho dây chuyền được chọn.",customBadge:"Tùy chỉnh / đã sửa",templateBadge:"Theo mẫu",processMissing:"Thiếu luồng quy trình"},
+ th:{site:"ไซต์",line:"สายการผลิต",template:"แม่แบบกระบวนการ",apply:"ใช้แม่แบบ",custom:"กระบวนการกำหนดเอง",addStep:"+ เพิ่มขั้นตอน",mapping:"Q3 · ผังกระบวนการ",mappingTarget:"คลังแม่แบบ + ผังตามสายการผลิต",mapped:"เชื่อมกับผู้ดูแลแล้ว",noSteps:"ยังไม่มีขั้นตอน โปรดใช้แม่แบบผู้ดูแลหรือเพิ่มขั้นตอนเอง",stepHelp:"แต่ละสายการผลิตมีผังกระบวนการของตนเอง แม่แบบผู้ดูแลเป็นค่าตั้งต้นที่ควบคุมได้ และขั้นตอนที่ลูกค้าเพิ่มจะมีผลเฉพาะสายการผลิตนั้น",templateLibrary:"คลังแม่แบบกระบวนการ",versioned:"แม่แบบมีเวอร์ชัน",active:"เปิดใช้",disabled:"ปิดใช้",duplicate:"ทำสำเนา",edit:"แก้ไข",del:"ลบ",disable:"ปิดใช้",enable:"เปิดใช้",inUse:"แม่แบบนี้ถูกใช้ใน Draft โปรดปิดใช้แทนการลบ",namePrompt:"ชื่อแม่แบบ",stepsPrompt:"ขั้นตอนกระบวนการ (คั่นด้วยจุลภาค)",stepPrompt:"ชื่อขั้นตอน",deleteStep:"ลบ",removeStepConfirm:"ลบขั้นตอนนี้หรือไม่?",deleteTemplateConfirm:"ลบแม่แบบนี้หรือไม่?",selectContext:"โปรดเลือกไซต์และสายการผลิตก่อน",templateApplied:"ใช้แม่แบบกับสายการผลิตที่เลือกแล้ว",customBadge:"กำหนดเอง / แก้ไขแล้ว",templateBadge:"อ้างอิงแม่แบบ",processMissing:"ไม่มีผังกระบวนการ"}
+};
+function q3t(k){var l=(typeof currentLocale==="undefined"?"en":currentLocale);return (Q3_UI[l]&&Q3_UI[l][k])||(Q3_UI.en[k]||k)}
+function q3DefaultSteps(name){
+ if(name.indexOf("Biologics Upstream")===0)return ["Media Preparation","Seed Culture","Production Bioreactor","Harvest"];
+ if(name.indexOf("Biologics Downstream")===0)return ["Harvest Clarification","Capture Chromatography","Polishing","UF/DF"];
+ if(name.indexOf("API Batch")===0)return ["Charge","Reaction","Work-up","Isolation","Drying"];
+ if(name.indexOf("OSD Manufacturing")===0)return ["Dispensing","Granulation","Blending","Compression","Coating","Packaging"];
+ return [];
+}
+function q3MigrateTemplates(){
+ if(!Array.isArray(state.processTemplates))state.processTemplates=[];
+ state.processTemplates=state.processTemplates.map(function(t,i){
+   if(typeof t==="object"&&t)return t;
+   var raw=String(t||("Template "+(i+1)));
+   var m=raw.match(/\s+v(\d+(?:\.\d+)?)$/i);
+   return {id:"pt_"+(i+1),name:raw.replace(/\s+v\d+(?:\.\d+)?$/i,""),version:m?m[1]:"1.0",steps:q3DefaultSteps(raw),active:true};
+ });
+}
+state.processFlows=state.processFlows||{};
+var q3Context={siteId:"",lineId:""};
+function q3AllLines(){
+ var out=[];
+ (state.sites||[]).forEach(function(s,si){(s.lines||[]).forEach(function(l,li){out.push({site:s,line:l,si:si,li:li})})});
+ return out;
+}
+function q3EnsureContext(){
+ var all=q3AllLines();
+ if(!all.length)return null;
+ var found=all.find(function(x){return x.site.id===q3Context.siteId&&x.line.id===q3Context.lineId});
+ if(!found){found=all[0];q3Context.siteId=found.site.id;q3Context.lineId=found.line.id}
+ return found;
+}
+function q3EnsureFlow(line){
+ if(!line)return {templateId:"",steps:[],modified:true};
+ if(!state.processFlows[line.id]){
+   var isFirst=q3AllLines()[0]&&q3AllLines()[0].line.id===line.id;
+   state.processFlows[line.id]={templateId:"",steps:isFirst&&Array.isArray(state.process)?state.process.slice():[],modified:isFirst};
+ }
+ return state.processFlows[line.id];
+}
+function q3Save(){
+ try{localStorage.setItem("avesProcessConfigV1",JSON.stringify({processTemplates:state.processTemplates,processFlows:state.processFlows}))}catch(e){}
+}
+function q3Load(){
+ q3MigrateTemplates();
+ try{
+   var x=JSON.parse(localStorage.getItem("avesProcessConfigV1")||"null");
+   if(x&&Array.isArray(x.processTemplates)&&x.processTemplates.length)state.processTemplates=x.processTemplates;
+   if(x&&x.processFlows)state.processFlows=x.processFlows;
+ }catch(e){}
+ q3EnsureContext();q3Save();
+}
+function q3ContextLabel(x,type,index){
+ if(type==="site")return (x.values&&x.values.siteName)||q3t("site")+" "+(index+1);
+ return (x.values&&x.values.lineName)||q3t("line")+" "+(index+1);
+}
+function q3InstallShell(){
+ var step3=document.getElementById("step3");if(!step3)return;
+ var toolbar=step3.querySelector(".toolbar");
+ if(toolbar){
+   var p=toolbar.querySelector("p");if(p)p.textContent=q3t("stepHelp");
+   var b=toolbar.querySelector("button");if(b){b.textContent=q3t("addStep");b.onclick=function(){addProcessStep()}}
+ }
+ if(!document.getElementById("q3ContextPanel")){
+   var panel=document.createElement("div");panel.id="q3ContextPanel";panel.className="q3-context";
+   panel.innerHTML='<div class="q3-context-grid">'+
+    '<div class="field"><label id="q3SiteLabel"></label><select id="q3SiteSelect"></select></div>'+
+    '<div class="field"><label id="q3LineLabel"></label><select id="q3LineSelect"></select></div>'+
+    '<div class="field"><label id="q3TemplateLabel"></label><div class="split"><select id="q3TemplateSelect" style="flex:1"></select><button class="btn secondary" type="button" id="q3ApplyTemplate"></button></div></div>'+
+   '</div><div style="height:8px"></div><div class="split"><span class="status good" id="q3MappedBadge"></span><span class="status" id="q3FlowBadge"></span></div>';
+   toolbar.insertAdjacentElement("afterend",panel);
+   document.getElementById("q3SiteSelect").addEventListener("change",function(){q3Context.siteId=this.value;q3Context.lineId="";renderQ3ProcessMapping()});
+   document.getElementById("q3LineSelect").addEventListener("change",function(){q3Context.lineId=this.value;renderQ3ProcessMapping()});
+   document.getElementById("q3ApplyTemplate").addEventListener("click",q3ApplyTemplate);
+ }
+ var processPanel=document.getElementById("processPanel");
+ if(processPanel&&!document.getElementById("q3AdminMappingNote")){
+   var note=document.createElement("div");note.id="q3AdminMappingNote";note.className="notice info";note.style.marginBottom="12px";
+   processPanel.querySelector(".card").insertBefore(note,processPanel.querySelector(".card").firstChild);
+ }
+ var map=document.querySelector("#siteLinePanel .mapping-grid");
+ if(map&&!document.getElementById("q3MappingCard")){
+   var card=document.createElement("div");card.id="q3MappingCard";card.className="mapping-card";
+   var dataModel=Array.from(map.children).find(function(x){return (x.textContent||"").indexOf("Data Model")>=0});
+   if(dataModel)map.insertBefore(card,dataModel);else map.appendChild(card);
+ }
+}
+function renderQ3Selectors(){
+ var ctx=q3EnsureContext();if(!ctx)return;
+ var siteSel=document.getElementById("q3SiteSelect"),lineSel=document.getElementById("q3LineSelect"),tplSel=document.getElementById("q3TemplateSelect");
+ if(!siteSel||!lineSel||!tplSel)return;
+ siteSel.innerHTML=(state.sites||[]).map(function(s,i){return '<option value="'+escapeAttr(s.id)+'" '+(s.id===ctx.site.id?"selected":"")+'>'+escapeHtml(q3ContextLabel(s,"site",i))+'</option>'}).join("");
+ var chosen=(state.sites||[]).find(function(s){return s.id===q3Context.siteId})||ctx.site;
+ lineSel.innerHTML=(chosen.lines||[]).map(function(l,i){return '<option value="'+escapeAttr(l.id)+'" '+(l.id===q3Context.lineId?"selected":"")+'>'+escapeHtml(q3ContextLabel(l,"line",i))+'</option>'}).join("");
+ if(!(chosen.lines||[]).some(function(l){return l.id===q3Context.lineId})&&chosen.lines&&chosen.lines[0])q3Context.lineId=chosen.lines[0].id;
+ var line=(chosen.lines||[]).find(function(l){return l.id===q3Context.lineId})||(chosen.lines||[])[0];
+ var flow=q3EnsureFlow(line);
+ tplSel.innerHTML='<option value="">'+escapeHtml(q3t("custom"))+'</option>'+state.processTemplates.filter(function(t){return t.active!==false}).map(function(t){return '<option value="'+escapeAttr(t.id)+'" '+(flow.templateId===t.id?"selected":"")+'>'+escapeHtml(t.name+" v"+t.version)+'</option>'}).join("");
+ document.getElementById("q3SiteLabel").textContent=q3t("site");
+ document.getElementById("q3LineLabel").textContent=q3t("line");
+ document.getElementById("q3TemplateLabel").textContent=q3t("template");
+ document.getElementById("q3ApplyTemplate").textContent=q3t("apply");
+ document.getElementById("q3MappedBadge").textContent=q3t("mapped");
+ document.getElementById("q3FlowBadge").textContent=flow.templateId&&!flow.modified?q3t("templateBadge"):q3t("customBadge");
+}
+function q3CurrentLine(){
+ var ctx=q3EnsureContext();if(!ctx)return null;
+ var site=(state.sites||[]).find(function(s){return s.id===q3Context.siteId})||ctx.site;
+ return (site.lines||[]).find(function(l){return l.id===q3Context.lineId})||(site.lines||[])[0]||null;
+}
+function q3ApplyTemplate(){
+ var line=q3CurrentLine();if(!line)return alert(q3t("selectContext"));
+ var id=document.getElementById("q3TemplateSelect").value;
+ if(!id){state.processFlows[line.id]={templateId:"",steps:[],modified:true};q3Save();renderQ3ProcessMapping();recalc();return}
+ var t=state.processTemplates.find(function(x){return x.id===id&&x.active!==false});if(!t)return;
+ state.processFlows[line.id]={templateId:t.id,steps:(t.steps||[]).slice(),modified:false};
+ state.process=state.processFlows[line.id].steps.slice();
+ q3Save();renderQ3ProcessMapping();recalc();
+}
+function q3EditStep(i){
+ var line=q3CurrentLine();if(!line)return;
+ var flow=q3EnsureFlow(line),old=flow.steps[i]||"";
+ var n=prompt(q3t("stepPrompt"),old);if(n===null)return;n=n.trim();if(!n)return;
+ flow.steps[i]=n;flow.modified=true;state.process=flow.steps.slice();q3Save();renderQ3ProcessMapping();recalc();
+}
+function q3DeleteStep(i){
+ var line=q3CurrentLine();if(!line)return;var flow=q3EnsureFlow(line);
+ if(!confirm(q3t("removeStepConfirm")))return;
+ flow.steps.splice(i,1);flow.modified=true;state.process=flow.steps.slice();q3Save();renderQ3ProcessMapping();recalc();
+}
+function renderQ3CustomerSteps(){
+ var host=document.getElementById("processList");if(!host)return;
+ var line=q3CurrentLine();if(!line){host.innerHTML='<div class="notice">'+escapeHtml(q3t("selectContext"))+'</div>';return}
+ var flow=q3EnsureFlow(line);state.process=flow.steps.slice();
+ if(!flow.steps.length){host.innerHTML='<div class="notice">'+escapeHtml(q3t("noSteps"))+'</div>';return}
+ host.innerHTML=flow.steps.map(function(p,i){return '<div class="process-step-row"><div class="process-step-main"><span class="status">'+(i+1)+'</span><b>'+escapeHtml(p)+'</b></div><div class="split"><button class="btn secondary" type="button" onclick="q3EditStep('+i+')">'+escapeHtml(q3t("edit"))+'</button><button class="btn danger" type="button" onclick="q3DeleteStep('+i+')">'+escapeHtml(q3t("deleteStep"))+'</button></div></div>'}).join("");
+}
+function renderQ3AdminTemplates(){
+ var host=document.getElementById("processTemplates");if(!host)return;
+ host.innerHTML=state.processTemplates.map(function(t){
+   var used=Object.values(state.processFlows||{}).filter(function(f){return f.templateId===t.id}).length;
+   return '<div class="rule"><div class="toolbar"><div><b>'+escapeHtml(t.name+" v"+t.version)+'</b><div class="tiny">'+escapeHtml(q3t("versioned"))+' · '+escapeHtml(t.active===false?q3t("disabled"):q3t("active"))+' · '+used+' Draft use(s)</div><div class="process-template-steps">'+(t.steps||[]).map(function(x){return '<span class="tag">'+escapeHtml(x)+'</span>'}).join("")+'</div></div><div class="split"><button class="btn ghost" type="button" onclick="q3DuplicateTemplate(\''+escapeAttr(t.id)+'\')">'+escapeHtml(q3t("duplicate"))+'</button><button class="btn secondary" type="button" onclick="q3EditTemplate(\''+escapeAttr(t.id)+'\')">'+escapeHtml(q3t("edit"))+'</button><button class="btn secondary" type="button" onclick="q3ToggleTemplate(\''+escapeAttr(t.id)+'\')">'+escapeHtml(t.active===false?q3t("enable"):q3t("disable"))+'</button><button class="btn danger" type="button" onclick="q3DeleteTemplate(\''+escapeAttr(t.id)+'\')">'+escapeHtml(q3t("del"))+'</button></div></div></div>';
+ }).join("");
+ var note=document.getElementById("q3AdminMappingNote");if(note)note.innerHTML="<b>"+escapeHtml(q3t("mapping"))+"</b> → "+escapeHtml(q3t("mappingTarget"));
+}
+function q3TemplateById(id){return state.processTemplates.find(function(x){return x.id===id})}
+function q3DuplicateTemplate(id){
+ var t=q3TemplateById(id);if(!t)return;
+ state.processTemplates.push({id:makeId("pt"),name:t.name+" Copy",version:"1.0",steps:(t.steps||[]).slice(),active:true});
+ q3Save();renderQ3ProcessMapping();
+}
+function q3EditTemplate(id){
+ var t=q3TemplateById(id);if(!t)return;
+ var n=prompt(q3t("namePrompt"),t.name);if(n===null)return;n=n.trim();if(!n)return;
+ var steps=prompt(q3t("stepsPrompt"),(t.steps||[]).join(", "));if(steps===null)return;
+ t.name=n;t.steps=steps.split(",").map(function(x){return x.trim()}).filter(Boolean);t.version=t.version||"1.0";
+ q3Save();renderQ3ProcessMapping();
+}
+function q3ToggleTemplate(id){var t=q3TemplateById(id);if(!t)return;t.active=t.active===false?true:false;q3Save();renderQ3ProcessMapping()}
+function q3DeleteTemplate(id){
+ var t=q3TemplateById(id);if(!t)return;
+ var used=Object.values(state.processFlows||{}).some(function(f){return f.templateId===id});
+ if(used)return alert(q3t("inUse"));
+ if(!confirm(q3t("deleteTemplateConfirm")))return;
+ state.processTemplates=state.processTemplates.filter(function(x){return x.id!==id});q3Save();renderQ3ProcessMapping();
+}
+function q3ProcessMissing(){
+ var miss=[];
+ q3AllLines().forEach(function(x){var flow=q3EnsureFlow(x.line);if(!flow.steps.length)miss.push(q3ContextLabel(x.site,"site",x.si)+" / "+q3ContextLabel(x.line,"line",x.li)+": "+q3t("processMissing"))});
+ return miss;
+}
+function renderQ3ProcessMapping(){
+ q3InstallShell();renderQ3Selectors();renderQ3CustomerSteps();renderQ3AdminTemplates();
+ var map=document.getElementById("q3MappingCard");if(map)map.innerHTML="<b>"+escapeHtml(q3t("mapping"))+"</b><div class=\"mapping-arrow\">Customer Assessment → Admin configuration</div><div class=\"config-linked\">"+escapeHtml(q3t("mappingTarget"))+"</div>";
+ var addBtn=document.querySelector("#processPanel .toolbar button");if(addBtn)addBtn.textContent="+ "+q3t("template");
+}
+addProcessStep=function(){
+ var line=q3CurrentLine();if(!line)return alert(q3t("selectContext"));
+ var n=prompt(q3t("stepPrompt"));if(!n)return;n=n.trim();if(!n)return;
+ var flow=q3EnsureFlow(line);flow.steps.push(n);flow.modified=true;state.process=flow.steps.slice();q3Save();renderQ3ProcessMapping();recalc();
+};
+addProcessTemplate=function(){
+ var n=prompt(q3t("namePrompt"));if(!n)return;n=n.trim();if(!n)return;
+ var steps=prompt(q3t("stepsPrompt"),"");if(steps===null)return;
+ state.processTemplates.push({id:makeId("pt"),name:n,version:"1.0",steps:steps.split(",").map(function(x){return x.trim()}).filter(Boolean),active:true});
+ q3Save();renderQ3ProcessMapping();
+};
+var _computeQ3Base=compute;
+compute=function(){
+ var x=_computeQ3Base(),extra=q3ProcessMissing();
+ if(extra.length){
+   x.miss=x.miss.concat(extra);
+   x.completeness=Math.max(45,100-x.miss.length*7);
+   x.confidence=x.completeness>=85&&x.miss.length<=1?"High":x.completeness>=65?"Medium":"Low";
+   var mid=(x.low+x.high)/2;var risk=x.confidence==="High"?.10:x.confidence==="Medium"?.18:.30;
+   x.low=Math.round(mid*(1-risk));x.high=Math.round(mid*(1+risk));
+ }
+ return x;
+};
+var _renderSiteFormsQ3Base=renderSiteForms;
+renderSiteForms=function(){_renderSiteFormsQ3Base();renderQ3ProcessMapping()};
+var _setLocaleQ3Base=setLocale;
+setLocale=function(locale){_setLocaleQ3Base(locale);renderQ3ProcessMapping()};
+q3Load();renderQ3ProcessMapping();recalc();
+})();
+</script>
+
 </body>
 </html>
