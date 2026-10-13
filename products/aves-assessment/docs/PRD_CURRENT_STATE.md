@@ -1,6 +1,6 @@
 # Aves Assessment — PRD Current State
 
-Version: 2026.10.13.1-baseline  
+Version: 2026.10.14.1-dev  
 Status: internal development baseline
 
 ## 1. Product objective
@@ -19,7 +19,7 @@ Organization, Assessment and User access are explicit authorization objects. Ema
 ## 4. Customer assessment baseline
 1. Requirement — Admin Requirement Library.
 2. Site & Production Line — Assessment → Site [1..N] → Production Line [1..N per Site].
-3. Process Flow — Admin process templates plus customer-specific steps where allowed.
+3. Process Flow — each Production Line owns its own Process Flow; Admin process templates provide the controlled baseline and customer-specific steps may be added where allowed.
 4. Equipment & Control — Equipment instance, controller, interface, protocol and relevant ISA-95 / ISA-88 role.
 5. Data / Automation / SCADA — current state, desired state and integration gaps.
 6. Target Schedule — target go-live / delivery timing and its estimation impact.
@@ -96,10 +96,21 @@ Every change must:
 - synchronize PRD, manuals, QA evidence, changelog and release manifest.
 
 ## 13. Open product backlog
-- Complete six-step bidirectional Admin mapping review.
+- Continue six-step bidirectional Admin mapping review. Q1, Q2 and Q3 are now explicitly mapped; Q4–Q6 remain the next mapping increments.
 - Continue strict language consistency regression across Customer and Admin screens.
 - Replace prototype browser storage with production data services before production use.
 - Define authentication/session implementation beyond prototype behavior.
 - Define persistent configuration version storage and migration model.
 - Complete API contract and CRM mapping details.
 - Complete internal persona-based QA before any production claim.
+
+
+## 14. Development increment 2026.10.14.1 — Q3 Process Flow mapping
+- Customer Q3 is now scoped to a selected Site and Production Line.
+- Each Production Line has its own Draft Process Flow instance.
+- Admin Process Template Library provides the starting baseline; applying a template copies its ordered steps into the selected line flow.
+- Customer-added/edited/deleted steps modify only that line's Draft flow and do not mutate the Admin template.
+- Admin can add, edit, duplicate, enable/disable and delete Process Templates.
+- A Process Template referenced by a Draft flow cannot be deleted; it may be disabled instead.
+- A missing Process Flow contributes to Information Completeness / Estimate Confidence gaps.
+- Current limitation: Q4 Equipment is not yet fully line-scoped; that is the next mapped increment and must not be silently inferred from Q3.
