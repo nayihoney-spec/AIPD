@@ -84,7 +84,7 @@ app.post("/api/v1/auth/accept-invitation",async(req,res,next)=>{
       const ac=(await db.query("SELECT id FROM assessment_access WHERE assessment_id=? AND user_id=?",[inv.assessment_id,u.id])).rows[0];
       if(ac)await db.exec("UPDATE assessment_access SET permission=? WHERE id=?",[inv.permission,ac.id]);
       else await db.exec("INSERT INTO assessment_access(id,assessment_id,user_id,permission,valid_from,valid_until,created_at) VALUES(?,?,?,?,?,?,?)",
-        [id("acc_"),inv.assessment_id,u.id,inv.permission,ts,inv.expires_at,ts]);
+        [id("acc_"),inv.assessment_id,u.id,inv.permission,inv.valid_from||ts,inv.expires_at,ts]);
     }
     await db.exec("UPDATE invitations SET accepted_at=? WHERE id=?",[ts,inv.id]);
     const sid=randomToken(32),expires=new Date(Date.now()+Number(process.env.SESSION_TTL_HOURS||12)*3600000);
@@ -152,9 +152,9 @@ app.post("/api/v1/admin/invitations",auth.requireAuth,auth.requireAdmin,async(re
     let assessment=(await db.query("SELECT * FROM assessments WHERE organization_id=? AND name=?",[org.id,assessmentName])).rows[0];
     if(!assessment){const aid=id("asmt_"),payload={requirements:[],sites:[],processFlows:{},equipment:[]};await db.exec("INSERT INTO assessments(id,organization_id,name,status,config_version,pricing_version,payload_text,completeness,confidence,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
       [aid,org.id,assessmentName,"draft","2026.10","2026.10",JSON.stringify(payload),0,"low",req.user.id,ts,ts]);assessment=(await db.query("SELECT * FROM assessments WHERE id=?",[aid])).rows[0]}
-    const token=randomToken(32),expires=isoOrNull(req.body.validUntil)||new Date(Date.now()+7*86400000);
-    const iid=id("inv_");await db.exec("INSERT INTO invitations(id,email,organization_id,assessment_id,permission,token_hash,expires_at,accepted_at,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
-      [iid,email,org.id,assessment.id,String(req.body.permission||"editor"),tokenHash(token),expires,null,req.user.id,ts]);
+    const token=randomToken(32),validFrom=isoOrNull(req.body.validFrom)||ts,expires=isoOrNull(req.body.validUntil)||new Date(Date.now()+7*86400000);
+    const iid=id("inv_");await db.exec("INSERT INTO invitations(id,email,organization_id,assessment_id,permission,token_hash,valid_from,expires_at,accepted_at,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+      [iid,email,org.id,assessment.id,String(req.body.permission||"editor"),tokenHash(token),validFrom,expires,null,req.user.id,ts]);
     const inviteUrl=publicBase(req)+"/invite?token="+encodeURIComponent(token);
     await notifications.queue("invite",email,{locale:req.body.locale||"en",inviteUrl,assessmentName:assessment.name,validUntil:expires.toISOString()});
     notifications.dispatch(10).catch(()=>{});
