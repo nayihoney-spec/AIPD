@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": [
+        "app/index.html",
+        "web/**",
+        "distribution/**",
+        "docs/**",
+        "Dockerfile",
+        "docker-compose.yml",
+        ".env.example",
+        "install.sh",
+        "install.ps1",
+        "migrations/**",
+        "src/**",
+        "scripts/**",
+        "package.json"
+      ]
+    }
+  },
+  "rewrites": [{"source": "/(.*)", "destination": "/api/index.js"}],
+  "crons": [{"path": "/api/internal/notifications/run", "schedule": "0 1 * * *"}]
+}
