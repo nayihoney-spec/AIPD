@@ -115,3 +115,27 @@
 
 ### Rollback target
 - Stable Production alias remains the previous approved deployment until the release gate passes.
+
+
+## 2026-10-15 — External Beta release QA gate (Draft candidate)
+
+### Added
+- Read-only GitHub Actions source-integrity workflow for the Aves Assessment product.
+- Standalone JavaScript checker supporting default static validation and explicit `--external` release-evidence checks.
+- Release evidence checklist definitions and explicit Product Owner approval check.
+
+### Changed
+- Missing external-beta evidence now fails closed with a readable error rather than being treated as a passing release.
+- Evidence and approval remain unverified; this is not external-beta approval.
+
+### Removed
+- Nothing from product runtime, production infrastructure, or existing data.
+
+### Validation
+- Script source parsed in an isolated JavaScript syntax check.
+- QA branch deployment `dpl_Efi9HDwaiECmYztsVJL9Mq2EYXJ1` is READY. Build readiness is not acceptance testing.
+- GitHub Actions has no observed passing run yet.
+- Release evidence JSON and Draft PR write are pending due connector safety gating.
+
+### Rollback target
+- Discard this isolated feature branch; Production is still `dpl_4mtJw7zSWbnQ6SZbRckvTLqwAMGP`.
