@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS invitations (
   assessment_id varchar(36),
   permission varchar(32) NOT NULL DEFAULT 'editor',
   token_hash varchar(128) NOT NULL UNIQUE,
+  valid_from datetime,
   expires_at datetime NOT NULL,
   accepted_at datetime,
   created_by varchar(36) NOT NULL,
