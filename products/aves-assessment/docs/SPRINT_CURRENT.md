@@ -35,3 +35,19 @@ Continue the six-step Customer Assessment ↔ Admin Platform mapping, starting w
 
 ## Decision gate
 No blocking OPEN decision is required for this Q3 prototype increment. Production persistence/auth/API implementation remains blocked by OPEN architecture decisions.
+
+
+## External Beta release workstream
+Target gate: **2026-10-16 12:00 UTC+8**.
+
+Confirmed decisions:
+- Neon PostgreSQL approved; APAC/Singapore cloud project selected.
+- MySQL compatibility required for local deployment.
+- SMTP must be configured from Admin UI.
+- Official installer download must be authorization-gated.
+
+Current release blockers:
+- Neon schema is prepared/tested on a temporary branch and requires explicit migration-apply approval before main database activation.
+- Bootstrap Platform Admin email/password must be configured before external login testing.
+- SMTP server credentials must be entered by Admin and test-mail must pass before customer invitation testing.
+- Public AIPD repository cannot enforce source-level licensing; official package is gated through Aves authentication.
