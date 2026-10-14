@@ -1,0 +1,22 @@
+name: Aves Assessment prototype QA
+on:
+  pull_request:
+    paths:
+      - "products/aves-assessment/**"
+      - ".github/workflows/aves-assessment-qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Static source check (no secrets or API writes)
+        run: node products/aves-assessment/scripts/qa-gate.mjs
