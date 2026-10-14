@@ -124,7 +124,7 @@ app.post("/api/v1/assessments/:id/quotes",auth.requireAuth,async(req,res,next)=>
     const qn="Q-"+new Date().toISOString().slice(0,10).replace(/-/g,"")+"-"+Math.floor(Math.random()*90000+10000);
     const snapshot={assessment:jsonParse(a.payload_text,{}),completeness:a.completeness,confidence:a.confidence,configVersion:a.config_version,pricingVersion:a.pricing_version,estimate:req.body.estimate||null};
     await db.exec("INSERT INTO quote_snapshots(id,assessment_id,quote_number,snapshot_text,issued_by,issued_at) VALUES(?,?,?,?,?,?)",[id("q_"),a.id,qn,JSON.stringify(snapshot),req.user.id,now()]);
-    await audit(req.user.id,"quote.snapshot_created","assessment",a.id,{quoteNumber:qn});res.json({ok:true,quoteNumber:qn});
+    const recipients=await db.query("SELECT DISTINCT u.email,u.locale FROM assessment_access aa JOIN users u ON u.id=aa.user_id WHERE aa.assessment_id=?",[a.id]);for(const x of recipients.rows)await notifications.queue("quote_ready",x.email,{locale:x.locale,assessmentName:a.name,status:"Formal Quote Snapshot "+qn});notifications.dispatch(10).catch(()=>{});await audit(req.user.id,"quote.snapshot_created","assessment",a.id,{quoteNumber:qn});res.json({ok:true,quoteNumber:qn});
   }catch(e){next(e)}
 });
 
