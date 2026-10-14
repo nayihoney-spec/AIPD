@@ -59,3 +59,18 @@ Available actions in the current development increment:
 - Delete when the template is not referenced by a Draft Process Flow.
 
 Publishing/applying a template to Customer Q3 creates a line-scoped Process Flow copy. Later customer edits do not modify the Admin template. Disable a template to stop new use without breaking existing Draft references.
+
+
+## SMTP Email Notifications
+Location: Platform & Pricing → Integrations & AI → SMTP Email Notifications.
+
+Admin can configure Enable, Host, Port, Security, Username, Password/App Password, From Name and From Email, then send a test email. Stored SMTP secrets are encrypted at rest and are not returned to the UI.
+
+Automated notification baseline:
+- customer invitation;
+- access expiry;
+- incomplete assessment reminder;
+- quote/status notification.
+
+## Authorized local installer
+Authenticated Aves users with active access can download the official local installation ZIP from the Customer Portal. The package includes Docker Compose, PostgreSQL/MySQL migration profiles and installation/user/admin manuals.
