@@ -42,3 +42,23 @@ No Production alias change during development.
 
 ### Rollback target
 `product/aves-assessment-baseline`
+
+
+## 2026.10.14.2-dev — External Beta backend QA
+Status: internal QA candidate  
+Branch: `release/aves-assessment-2026-10-16-beta`
+
+### QA deployment
+Vercel project: `aves-assessment-beta-qa`  
+Deployment: `dpl_BeTmERNWJVq3XSjm9Xe81yPH7K64`  
+Health check: PASS
+
+### Database
+Neon project: Aves Assessment Beta APAC / Singapore  
+Main migration: NOT YET APPLIED  
+Consolidated temporary migration branch: tested with 13 expected tables and invitation access-start field.
+
+### Rollback / isolation
+- Stable external Production alias has not been changed.
+- QA deployment points to a temporary Neon migration branch.
+- Rejecting the migration can discard the temporary branch without touching Neon main.
