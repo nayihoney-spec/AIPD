@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS invitations (
   assessment_id varchar(36) REFERENCES assessments(id) ON DELETE CASCADE,
   permission varchar(32) NOT NULL DEFAULT 'editor',
   token_hash varchar(128) NOT NULL UNIQUE,
+  valid_from timestamp,
   expires_at timestamp NOT NULL,
   accepted_at timestamp,
   created_by varchar(36) NOT NULL REFERENCES users(id),
