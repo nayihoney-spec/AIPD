@@ -114,3 +114,15 @@ Every change must:
 - A Process Template referenced by a Draft flow cannot be deleted; it may be disabled instead.
 - A missing Process Flow contributes to Information Completeness / Estimate Confidence gaps.
 - Current limitation: Q4 Equipment is not yet fully line-scoped; that is the next mapped increment and must not be silently inferred from Q3.
+
+
+## 15. External Beta backend baseline — 2026-10-14
+- Cloud persistence target: Neon PostgreSQL 17 in APAC/Singapore.
+- Local database profiles: PostgreSQL 17 (recommended) and MySQL 8.4 compatibility.
+- Invite-only authentication, database-backed sessions and explicit Assessment access are implemented in the release branch.
+- Platform configuration and Assessment Draft data have REST persistence endpoints.
+- Admin-configurable SMTP is implemented with encrypted secret storage.
+- Notification queue supports invitation, access-expiry, incomplete-assessment and quote/status events.
+- Official local installation package is exposed through an authenticated download endpoint.
+- Docker Compose one-click installers are provided for Windows and macOS/Linux.
+- Current production alias is not yet promoted; External Beta remains subject to database migration approval, admin bootstrap, SMTP configuration and release QA.

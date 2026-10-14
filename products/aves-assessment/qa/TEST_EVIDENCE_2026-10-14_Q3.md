@@ -34,3 +34,20 @@ Preview URL: `https://aves-assessment-portal-preview-6i8a7tx0c.vercel.app/`
 
 ## Result
 Candidate is suitable for internal interactive review only. It is not yet approved for the stable production alias.
+
+
+## External Beta backend preview evidence
+- Old temporary Neon migration was discarded without applying changes.
+- Consolidated PostgreSQL migration rebuilt from the release branch and applied successfully to a new temporary Neon branch.
+- Temporary branch table count: 13.
+- Invitations schema verified to contain `valid_from` and `expires_at`.
+- Foreign key / unique constraints inspected for assessment_access, invitations and quote_snapshots.
+- Vercel QA project: `aves-assessment-beta-qa`.
+- QA deployment: `dpl_BeTmERNWJVq3XSjm9Xe81yPH7K64` — READY.
+- `GET /healthz` returned HTTP 200 with `dbDialect=postgres` against the temporary Neon migration branch.
+- `/setup` first-run Platform Admin page is reachable.
+- `/login` page is reachable.
+- Stable Production alias remains unchanged.
+
+### Remaining gate
+Do not apply the consolidated migration to Neon main until explicit Product Owner approval. Do not promote the stable external URL until main migration, admin initialization, SMTP test and end-to-end regression pass.

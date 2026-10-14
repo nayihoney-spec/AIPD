@@ -83,3 +83,35 @@
 ### Rollback target
 - Branch base: `product/aves-assessment-baseline` at repository bootstrap baseline.
 - Production runtime remains the previous stable Vercel deployment until this candidate is approved.
+
+
+## 2026-10-14 — External Beta backend foundation
+
+### Added
+- Node/Express REST backend and Vercel function entrypoint.
+- Neon PostgreSQL / MySQL-compatible database adapter.
+- PostgreSQL and MySQL migration baselines.
+- Invite-only login/session APIs and invitation acceptance flow.
+- Assessment persistence and Formal Quote snapshot API.
+- Admin configuration persistence endpoint.
+- Admin-configurable SMTP with encrypted secrets and test-email action.
+- Notification queue and scheduled expiry/incomplete reminders.
+- Quote-ready notification enqueueing.
+- Dockerfile, Docker Compose and interactive Windows/macOS/Linux installers.
+- Authenticated official installer ZIP endpoint.
+- Installation, SMTP, operations and authorized-distribution manuals.
+
+### Changed
+- Release candidate moves from browser-only persistence toward database-backed External Beta operation.
+- Cloud data target is APAC Neon PostgreSQL; MySQL remains an application/local compatibility profile.
+
+### Removed
+- Nothing from the current approved stable Production alias.
+
+### Unchanged
+- AI Assessment Assistant remains disabled by default.
+- CRM provider-specific integration remains deferred.
+- Production stable alias has not been promoted.
+
+### Rollback target
+- Stable Production alias remains the previous approved deployment until the release gate passes.

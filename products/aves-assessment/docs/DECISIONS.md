@@ -38,3 +38,13 @@ Aves Assessment product assets are managed under `nayihoney-spec/AIPD/products/a
 - Retention period for full audit/release history beyond quick-restore versions.
 
 OPEN is not APPROVED. Stop and ask before implementation when an OPEN item becomes blocking.
+
+
+### ASMT-DATA-001 — External Beta database
+Cloud External Beta uses **Neon PostgreSQL 17** in the APAC/Singapore region. MySQL compatibility is provided by the application database-adapter and separate MySQL migrations for local deployment; Neon itself remains PostgreSQL.
+
+### ASMT-NOTIFY-001 — SMTP notification transport
+Automated email uses a provider-neutral, Admin-configurable SMTP connection. SMTP credentials are encrypted at rest and are not returned to the browser after save.
+
+### ASMT-DIST-001 — Authorized installer package
+The official local installation ZIP requires authenticated Aves access. Because the AIPD repository is public, the public repository cannot enforce customer authorization over public source itself; it hosts release metadata/documentation while the official package is delivered by the authenticated application endpoint. A private repository/package registry is required later if source-level confidentiality becomes a licensing requirement.

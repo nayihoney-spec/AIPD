@@ -96,6 +96,9 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
       <div class="card span4"><h3>Target Requirements</h3><span class="tag" id="homeReqData">Data Capturing</span><span class="tag" id="homeReqScada">SCADA</span><p id="homeAutomationNote">Automation retrofit is not selected. If enabled later, the system automatically adds controls engineering, FAT/SAT and applicable CSV effort.</p></div>
       <div class="card span4"><h3>Preliminary Estimate</h3><div class="kpi" id="homePrice">¥ 680k–920k</div><div class="sub" id="homeEstimateSub">Example range · not a formal quotation</div><p id="homeSnapshotNote">Once a Formal Quote is issued, its Pricing/Rule Snapshot is preserved and is not changed by later Admin pricing updates.</p></div>
       <div class="card span8"><div class="toolbar"><h3>Data Structure</h3><span class="status good" id="homeOwnershipBadge">Primary ownership + reusable scope</span></div><div class="arch" id="homeDataArch"><span class="node" data-home-arch="organization">Organization</span><span class="arrow">→</span><span class="node" data-home-arch="site">Site</span><span class="arrow">→</span><span class="node" data-home-arch="productionLine">Production Line</span><span class="arrow">→</span><span class="node" data-home-arch="processFlow">Process Flow</span><span class="arrow">→</span><span class="node" data-home-arch="processStep">Process Step</span><span class="arrow">→</span><span class="node" data-home-arch="equipmentInstance">Equipment Instance</span></div><p id="homeOwnershipNote">Each equipment instance has one primary Process Step, while multiple use cases such as Data Capture, Automation, SCADA and Digital Twin can reference the same equipment instance.</p></div>
+
+      <div class="card span4" id="localInstallCard"><h3 id="localInstallTitle">Local Installation Package</h3><p id="localInstallDesc">Authorized users can download the current Docker-based local installation package and manuals.</p><button class="btn secondary" id="localInstallBtn" type="button" onclick="downloadLocalInstaller()">Download Local Package</button><div class="tiny" id="localInstallNote" style="margin-top:8px">Official package access requires an authenticated Aves account.</div></div>
+
       <div class="card span4"><h3>Need help completing the information?</h3><div class="notice" id="homeConsultNote">A wider estimate can be generated first. To improve confidence, Sales can arrange a remote or on-site Light Assessment Consulting service.</div><div style="height:10px"></div><button class="btn ghost" id="homeConsultButton" onclick="openConsult()">Request Consulting</button></div>
     </div>
   </section>
@@ -322,6 +325,25 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
           <div class="rule"><b>Allowed assistance</b><div class="tiny">Identify missing information · explain controller/protocol terminology · suggest likely follow-up questions · summarize assessment gaps · explain estimate drivers.</div></div>
           <div class="rule"><b>Human confirmation</b><div class="tiny">AI suggestions cannot silently modify scope, completeness rules, pricing rules or a Formal Quote. User/Admin confirmation is required for controlled changes.</div></div>
           <div id="aiStateNotice" class="notice">AI Assessment Assistant is disabled. The rules-based assessment and quotation workflow remains fully functional without AI.</div>
+        </div>
+
+
+        <div class="card span12" id="smtpAdminCard">
+          <div class="toolbar"><div><h3 id="smtpTitle">SMTP Email Notifications</h3><p id="smtpDesc">Admin-configurable mail transport for invitation, access-expiry, incomplete-assessment and quote/status notifications.</p></div><span class="status" id="smtpState">Not configured</span></div>
+          <div class="form-grid">
+            <div class="field third"><label id="smtpHostLabel">SMTP Host</label><input id="smtpHost" placeholder="smtp.example.com" /></div>
+            <div class="field third"><label id="smtpPortLabel">Port</label><input id="smtpPort" type="number" value="587" /></div>
+            <div class="field third"><label id="smtpSecurityLabel">Security</label><select id="smtpSecurity"><option value="starttls">STARTTLS</option><option value="tls">TLS / SMTPS</option><option value="none">None</option></select></div>
+            <div class="field"><label id="smtpUserLabel">Username</label><input id="smtpUsername" autocomplete="off" /></div>
+            <div class="field"><label id="smtpPassLabel">Password / App Password</label><input id="smtpPassword" type="password" autocomplete="new-password" placeholder="Leave blank to keep existing secret" /></div>
+            <div class="field"><label id="smtpFromNameLabel">From Name</label><input id="smtpFromName" value="Aves Assessment" /></div>
+            <div class="field"><label id="smtpFromEmailLabel">From Email</label><input id="smtpFromEmail" type="email" placeholder="assessment@example.com" /></div>
+            <div class="field"><label id="smtpTestToLabel">Test Recipient</label><input id="smtpTestTo" type="email" placeholder="admin@example.com" /></div>
+            <div class="field" style="display:flex;align-items:end"><label class="switchline"><span id="smtpEnabledLabel">Enable SMTP</span><input id="smtpEnabled" type="checkbox" /></label></div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="split"><button class="btn" type="button" id="smtpSaveBtn" onclick="saveSmtpSettings()">Save SMTP Configuration</button><button class="btn secondary" type="button" id="smtpTestBtn" onclick="testSmtpSettings()">Send Test Email</button></div>
+          <div style="height:10px"></div><div class="notice info" id="smtpNote">The SMTP secret is encrypted at rest using APP_ENCRYPTION_KEY and is never returned to the browser after saving.</div>
         </div>
 
         <div class="card span12">
@@ -1175,6 +1197,91 @@ renderSiteForms=function(){_renderSiteFormsQ3Base();renderQ3ProcessMapping()};
 var _setLocaleQ3Base=setLocale;
 setLocale=function(locale){_setLocaleQ3Base(locale);renderQ3ProcessMapping()};
 q3Load();renderQ3ProcessMapping();recalc();
+})();
+</script>
+
+
+<script>
+// ===== External beta backend binding / SMTP / authorized installer =====
+(function(){
+const BETA_UI={
+ en:{smtpTitle:"SMTP Email Notifications",smtpDesc:"Admin-configurable mail transport for invitation, access-expiry, incomplete-assessment and quote/status notifications.",host:"SMTP Host",port:"Port",security:"Security",username:"Username",password:"Password / App Password",fromName:"From Name",fromEmail:"From Email",testTo:"Test Recipient",enable:"Enable SMTP",save:"Save SMTP Configuration",test:"Send Test Email",notConfigured:"Not configured",configured:"Configured",enabledState:"Enabled",saved:"SMTP configuration saved.",testSent:"Test email sent.",smtpNote:"The SMTP secret is encrypted at rest using APP_ENCRYPTION_KEY and is never returned to the browser after saving.",installTitle:"Local Installation Package",installDesc:"Authorized users can download the current Docker-based local installation package and manuals.",installBtn:"Download Local Package",installNote:"Official package access requires an authenticated Aves account.",inviteQueued:"Invitation queued for email delivery.",adminOnly:"Admin only"},
+ "zh-Hant":{smtpTitle:"SMTP 郵件通知",smtpDesc:"由管理後台配置郵件傳輸，用於邀請、存取期限、評估未完成提醒與報價／狀態通知。",host:"SMTP 主機",port:"連接埠",security:"安全模式",username:"帳號",password:"密碼／應用程式密碼",fromName:"寄件名稱",fromEmail:"寄件信箱",testTo:"測試收件人",enable:"啟用 SMTP",save:"儲存 SMTP 設定",test:"寄送測試郵件",notConfigured:"尚未設定",configured:"已設定",enabledState:"已啟用",saved:"SMTP 設定已儲存。",testSent:"測試郵件已寄出。",smtpNote:"SMTP 密碼會使用 APP_ENCRYPTION_KEY 加密保存；儲存後不會再回傳到瀏覽器。",installTitle:"本地一鍵安裝包",installDesc:"已授權用戶可下載目前 Docker 本地安裝包與相關使用／管理手冊。",installBtn:"下載本地安裝包",installNote:"正式安裝包下載需要已登入且具有效授權的 Aves 帳號。",inviteQueued:"邀請已加入自動郵件發送佇列。",adminOnly:"僅限管理員"},
+ "zh-Hans":{smtpTitle:"SMTP 邮件通知",smtpDesc:"由管理后台配置邮件传输，用于邀请、访问期限、评估未完成提醒与报价／状态通知。",host:"SMTP 主机",port:"端口",security:"安全模式",username:"账号",password:"密码／应用密码",fromName:"发件名称",fromEmail:"发件邮箱",testTo:"测试收件人",enable:"启用 SMTP",save:"保存 SMTP 设置",test:"发送测试邮件",notConfigured:"尚未设置",configured:"已设置",enabledState:"已启用",saved:"SMTP 设置已保存。",testSent:"测试邮件已发送。",smtpNote:"SMTP 密码使用 APP_ENCRYPTION_KEY 加密保存；保存后不会返回浏览器。",installTitle:"本地一键安装包",installDesc:"已授权用户可下载当前 Docker 本地安装包及使用／管理手册。",installBtn:"下载本地安装包",installNote:"正式安装包下载需要已登录且具有效授权的 Aves 账号。",inviteQueued:"邀请已加入自动邮件发送队列。",adminOnly:"仅限管理员"}
+};
+let betaSession=null,betaAssessmentId=null,betaSaveTimer=null,betaConfigTimer=null;
+function bt(k){const l=(typeof currentLocale==="undefined"?"en":currentLocale);return (BETA_UI[l]&&BETA_UI[l][k])||(BETA_UI.en[k]||k)}
+function betaText(){
+ const ids={smtpTitle:"smtpTitle",smtpDesc:"smtpDesc",host:"smtpHostLabel",port:"smtpPortLabel",security:"smtpSecurityLabel",username:"smtpUserLabel",password:"smtpPassLabel",fromName:"smtpFromNameLabel",fromEmail:"smtpFromEmailLabel",testTo:"smtpTestToLabel",enable:"smtpEnabledLabel",save:"smtpSaveBtn",test:"smtpTestBtn",smtpNote:"smtpNote",installTitle:"localInstallTitle",installDesc:"localInstallDesc",installBtn:"localInstallBtn",installNote:"localInstallNote"};
+ Object.entries(ids).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=bt(k)});
+}
+async function api(url,opts={}){
+ const r=await fetch(url,{credentials:"same-origin",...opts,headers:{"content-type":"application/json",...(opts.headers||{})}});
+ if(r.status===401){location.href="/login";throw new Error("authentication_required")}
+ const ct=r.headers.get("content-type")||"";const x=ct.includes("application/json")?await r.json():await r.text();
+ if(!r.ok)throw new Error((x&&x.message)||(x&&x.error)||("HTTP "+r.status));return x;
+}
+function betaPayload(){
+ return {
+  requirements:state.requirements,sites:state.sites,processFlows:state.processFlows||{},equipment:state.equipment,
+  scada:document.getElementById("scada")?.value||"unknown",historian:document.getElementById("historian")?.value||"unknown",
+  opc:document.getElementById("opc")?.value||"unknown",network:document.getElementById("network")?.value||"partial",
+  goLive:document.getElementById("goLive")?.value||"",schedule:document.getElementById("schedule")?.value||"normal"
+ };
+}
+function betaApplyPayload(p){
+ if(!p||typeof p!=="object")return;
+ ["requirements","sites","equipment"].forEach(k=>{if(Array.isArray(p[k])&&p[k].length)state[k]=p[k]});
+ if(p.processFlows&&typeof p.processFlows==="object")state.processFlows=p.processFlows;
+ [["scada","scada"],["historian","historian"],["opc","opc"],["network","network"],["goLive","goLive"],["schedule","schedule"]].forEach(([k,id])=>{const el=document.getElementById(id);if(el&&p[k]!=null)el.value=p[k]});
+ try{renderReq();renderSiteForms();renderEquipment();if(typeof renderQ3ProcessMapping==="function")renderQ3ProcessMapping();recalc()}catch(e){console.error("beta payload",e)}
+}
+function scheduleAssessmentSave(){
+ if(!betaAssessmentId)return;clearTimeout(betaSaveTimer);betaSaveTimer=setTimeout(async()=>{
+  try{const x=compute();await api("/api/v1/assessments/"+encodeURIComponent(betaAssessmentId),{method:"PUT",body:JSON.stringify({payload:betaPayload(),completeness:x.completeness,confidence:x.confidence})})}catch(e){console.error("assessment save",e)}
+ },700);
+}
+function configSnapshot(){
+ const x={requirements:state.requirements,siteSchema:state.siteSchema,lineSchema:state.lineSchema,processTemplates:state.processTemplates,equipmentMaster:state.equipmentMaster,resources:state.resources,workUnits:state.workUnits,rules:state.rules,weights:state.weights};
+ if(typeof customI18N!=="undefined")x.customI18N=customI18N;if(typeof termPolicy!=="undefined")x.termPolicy=termPolicy;if(typeof q1GuidanceTemplates!=="undefined")x.q1GuidanceTemplates=q1GuidanceTemplates;return x;
+}
+function scheduleConfigSave(){
+ if(!betaSession?.user?.isPlatformAdmin)return;clearTimeout(betaConfigTimer);betaConfigTimer=setTimeout(()=>api("/api/v1/admin/configuration",{method:"PUT",body:JSON.stringify({configuration:configSnapshot()})}).catch(e=>console.error("config save",e)),700);
+}
+async function loadConfig(){
+ if(!betaSession?.user?.isPlatformAdmin)return;
+ try{const x=await api("/api/v1/admin/configuration");const c=x.configuration||{};["requirements","siteSchema","lineSchema","processTemplates","equipmentMaster","resources","workUnits","rules"].forEach(k=>{if(Array.isArray(c[k])&&c[k].length)state[k]=c[k]});if(c.weights)state.weights=c.weights;if(c.customI18N&&typeof customI18N!=="undefined")customI18N=c.customI18N;if(c.termPolicy&&typeof termPolicy!=="undefined")Object.assign(termPolicy,c.termPolicy);if(c.q1GuidanceTemplates&&typeof q1GuidanceTemplates!=="undefined")Object.assign(q1GuidanceTemplates,c.q1GuidanceTemplates);renderReq();renderSiteForms();renderEquipment();renderAdmin();if(typeof renderQ3ProcessMapping==="function")renderQ3ProcessMapping();}catch(e){console.error("config load",e)}
+}
+async function loadSmtp(){
+ if(!betaSession?.user?.isPlatformAdmin)return;
+ try{const x=await api("/api/v1/admin/smtp");smtpHost.value=x.host||"";smtpPort.value=x.port||587;smtpSecurity.value=x.security||"starttls";smtpUsername.value=x.username||"";smtpFromName.value=x.fromName||"Aves Assessment";smtpFromEmail.value=x.fromEmail||"";smtpEnabled.checked=!!x.enabled;smtpPassword.placeholder=x.passwordConfigured?"Secret already configured — leave blank to keep":"Enter SMTP password / app password";smtpState.textContent=x.enabled?bt("enabledState"):(x.passwordConfigured||x.host?bt("configured"):bt("notConfigured"));smtpState.className="status "+(x.enabled?"good":"");}catch(e){console.error("smtp load",e)}
+}
+window.saveSmtpSettings=async function(){
+ try{const body={enabled:smtpEnabled.checked,host:smtpHost.value,port:Number(smtpPort.value||587),security:smtpSecurity.value,username:smtpUsername.value,fromName:smtpFromName.value,fromEmail:smtpFromEmail.value};if(smtpPassword.value)body.password=smtpPassword.value;await api("/api/v1/admin/smtp",{method:"PUT",body:JSON.stringify(body)});smtpPassword.value="";await loadSmtp();alert(bt("saved"))}catch(e){alert(e.message)}
+};
+window.testSmtpSettings=async function(){try{await api("/api/v1/admin/smtp/test",{method:"POST",body:JSON.stringify({to:smtpTestTo.value||betaSession?.user?.email})});alert(bt("testSent"))}catch(e){alert(e.message)}};
+window.downloadLocalInstaller=function(){location.href="/api/v1/distribution/install-package"};
+const oldInvite=window.saveInvite;
+window.saveInvite=async function(){
+ try{
+  const email=invEmail.value.trim(),organizationName=invOrg.value.trim(),assessmentName=invAssessment.value.trim();if(!email||!organizationName||!assessmentName)return alert("Email, Organization and Assessment are required");
+  await api("/api/v1/admin/invitations",{method:"POST",body:JSON.stringify({email,organizationName,assessmentName,permission:String(invPerm.value||"Editor").toLowerCase(),validFrom:invFrom.value,validUntil:invUntil.value,locale:currentLocale})});
+  accessRows.insertAdjacentHTML("beforeend",'<tr><td>'+escapeHtml(email)+'</td><td>'+escapeHtml(organizationName)+'</td><td>'+escapeHtml(assessmentName)+'</td><td>'+escapeHtml(invPerm.value)+'</td><td>Configured by Admin</td><td>'+escapeHtml(invFrom.value)+'</td><td>'+escapeHtml(invUntil.value)+'</td><td><span class="status">Invited / Email queued</span></td></tr>');
+  closeModal("inviteModal");alert(bt("inviteQueued"));
+ }catch(e){alert(e.message)}
+};
+async function betaInit(){
+ betaText();
+ try{betaSession=await api("/api/v1/session");document.querySelector(".avatar").textContent=(betaSession.user.displayName||betaSession.user.email||"U").slice(0,2).toUpperCase();
+  if(!betaSession.user.isPlatformAdmin){document.querySelectorAll('button[data-page="admin"],button[data-page="config"],button[data-page="access"]').forEach(x=>x.style.display="none");}
+  else{await loadConfig();await loadSmtp()}
+  const list=await api("/api/v1/assessments");if(Array.isArray(list)&&list[0]){betaAssessmentId=list[0].id;betaApplyPayload(list[0].payload)}
+ }catch(e){console.error("beta init",e)}
+ document.addEventListener("change",ev=>{if(ev.target.closest("#assessment"))scheduleAssessmentSave();if(ev.target.closest("#config"))scheduleConfigSave()},true);
+ document.addEventListener("click",ev=>{if(ev.target.closest("#assessment"))setTimeout(scheduleAssessmentSave,0);if(ev.target.closest("#config"))setTimeout(scheduleConfigSave,0)},true);
+}
+const prevLocale=window.setLocale||setLocale;window.setLocale=function(locale){prevLocale(locale);betaText();if(betaSession?.user?.isPlatformAdmin)loadSmtp()};
+betaInit();
 })();
 </script>
 

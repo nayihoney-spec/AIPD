@@ -61,3 +61,20 @@ For all supported locales:
 - Verify missing Process Flow adds a completeness/confidence gap.
 - Run locale checks for English, Traditional Chinese, Simplified Chinese, French, Japanese, Spanish, Vietnamese and Thai on all new Q3 labels/actions.
 - Confirm Q4 Equipment behavior is unchanged except that its legacy default process-step reference may reflect the active Q3 flow; full Q4 line scoping remains out of scope for this increment.
+
+
+## 2026-10-14 — External Beta P0 pre-release QA additions
+
+These checks are required for the external-beta GO decision, and must be supported by repeatable, timestamped evidence before promotion:
+
+- First Platform Admin provisioning: confirm initial registration is restricted to an authorized operator before allowing any external reachability; validate single-initialization behavior and concurrent-request handling. Page availability alone is not sufficient proof of authorization.
+- Formal Quote issuance: verify read-only/viewer accounts cannot issue, modify or set the payable estimate of a Formal Quote. Issuance must be restricted to authorized roles, use server-controlled pricing/rules, and persist an immutable complete configuration/rules/scope snapshot.
+- Explicit tenant/assessment authorization: verify no cross-organization or cross-assessment access can be gained from email domain, URL changes, or a valid but irrelevant membership.
+- Invitation/access periods: confirm not-before, expiry, one-time acceptance, and active assessment grants are honored by both UI and server endpoints.
+- Credential safety: verify initial provisioning, email configuration and recovery controls do not reveal credentials or permit unauthorized privilege escalation.
+- Session controls: independently verify expiry, account-disable behavior, CSRF protection on state-changing requests, and login abuse/rate limiting.
+- Installer entitlement: download must require a current, in-scope authorized grant, and package contents plus Windows/macOS/Linux local install must pass a fresh test.
+- SMTP: confirm test delivery, queue processing, failure handling and administrative audit evidence.
+- Release traceability: reconcile the actual stable-domain target with the approved release-manifest baseline and capture a reproducible rollback target before external cutover.
+
+Any P0 authorization failure is a NO-GO. Recording a QA deployment as READY does not imply these gates have passed. Keep security-sensitive reproduction details in restricted QA evidence rather than the public source repository.
