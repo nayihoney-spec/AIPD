@@ -18,3 +18,12 @@ A preliminary estimate is a range, not a binding quotation. Missing controller, 
 
 ## Light Consulting
 If important information is unknown, request Light Consulting so the assessment can be improved before a more reliable quotation is prepared.
+
+
+## Q3 — Process Flow
+For each Production Line, select the Site and Production Line context first. You may then:
+- apply an available Admin Process Template;
+- review the ordered Process Steps;
+- add, edit or delete line-specific Process Steps when allowed.
+
+Your changes affect only the selected Production Line Draft Process Flow. They do not modify the Admin master template.
