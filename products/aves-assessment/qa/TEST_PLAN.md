@@ -78,3 +78,16 @@ These checks are required for the external-beta GO decision, and must be support
 - Release traceability: reconcile the actual stable-domain target with the approved release-manifest baseline and capture a reproducible rollback target before external cutover.
 
 Any P0 authorization failure is a NO-GO. Recording a QA deployment as READY does not imply these gates have passed. Keep security-sensitive reproduction details in restricted QA evidence rather than the public source repository.
+
+
+## 2026-10-14 evening — Source-review follow-up (not an executed penetration test)
+
+Source inspection of the External Beta release candidate identified unresolved release guards requiring negative-test evidence. Track these as **P0 / NO-GO** until fixed and independently retested:
+
+- First Platform Admin enrollment must be operator-restricted and concurrency-safe; do not expose this action to external visitors.
+- Formal Quote issuance must require the approved issuer role and a server-owned, versioned pricing/rule calculation. An API-persisted snapshot alone is not commercial approval.
+- Invitation not-before times and reassigned access windows must be applied consistently.
+- Deactivated accounts must lose existing application sessions; installer entitlement must honor both start and end of an active grant.
+- Confirm consistent tenant/assessment scoping, replay controls, and audit evidence across all writes.
+
+**Evidence boundary:** These findings are based on source review, not live security testing. Do not publish sensitive reproduction instructions or attempt unrestricted external onboarding. The current QA deployment remains an internal, access-protected candidate; no production alias or database migration approval is implied.
