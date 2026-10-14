@@ -34,7 +34,23 @@ app.get("/healthz",async(req,res)=>{
 });
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"..","web","login.html")));
 app.get("/invite",(req,res)=>res.sendFile(path.join(__dirname,"..","web","invite.html")));
+app.get("/setup",async(req,res,next)=>{try{const c=await db.query("SELECT COUNT(*) c FROM users WHERE is_platform_admin=true");if(Number(c.rows[0]?.c||0)>0)return res.redirect("/login");res.sendFile(path.join(__dirname,"..","web","setup.html"))}catch(e){next(e)}});
 app.get("/",pageAuth,(req,res)=>res.sendFile(path.join(__dirname,"..","app","index.html")));
+
+app.post("/api/v1/setup/bootstrap-admin",async(req,res,next)=>{
+  try{
+    const c=await db.query("SELECT COUNT(*) c FROM users WHERE is_platform_admin=true");
+    if(Number(c.rows[0]?.c||0)>0)return res.status(409).json({error:"bootstrap_closed"});
+    const email=String(req.body.email||"").trim().toLowerCase(),password=String(req.body.password||""),displayName=String(req.body.displayName||"Platform Admin").trim();
+    if(!email||!email.includes("@"))return res.status(400).json({error:"valid_email_required"});
+    if(password.length<12)return res.status(400).json({error:"password_min_12"});
+    const ts=now(),uid=id("usr_"),hash=await hashPassword(password);
+    await db.exec("INSERT INTO users(id,email,password_hash,display_name,status,is_platform_admin,must_change_password,locale,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
+      [uid,email,hash,displayName||"Platform Admin","active",true,false,String(req.body.locale||"en"),ts,ts]);
+    await audit(uid,"platform.bootstrap_admin_created","user",uid,{});
+    res.json({ok:true});
+  }catch(e){next(e)}
+});
 
 app.post("/api/v1/auth/login",async(req,res,next)=>{
   try{
