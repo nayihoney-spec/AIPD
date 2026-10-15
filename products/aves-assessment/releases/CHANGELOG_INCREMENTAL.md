@@ -135,7 +135,24 @@
 - Script source parsed in an isolated JavaScript syntax check.
 - QA branch deployment `dpl_Efi9HDwaiECmYztsVJL9Mq2EYXJ1` is READY. Build readiness is not acceptance testing.
 - GitHub Actions has no observed passing run yet.
-- Release evidence JSON and Draft PR write are pending due connector safety gating.
+- Machine-readable NO-GO evidence register is now committed with 12 mandatory gates; all remain unapproved and none have been marked passed. Draft PR remains pending.
 
 ### Rollback target
 - Discard this isolated feature branch; Production is still `dpl_4mtJw7zSWbnQ6SZbRckvTLqwAMGP`.
+
+
+## 2026-10-16 — Release evidence gate completeness (isolated QA branch)
+
+### Added
+- `releases/external-beta-gates.json` with 12 explicitly pending/blocked evidence items, empty review approvals, and a NO-GO decision. No pass evidence was invented.
+- An opt-in manual `workflow_dispatch` control named `external_beta` that invokes the fail-closed `--external` checker. Default pull-request checks remain source-only and read-only.
+
+### Validation and limitations
+- The schema has exactly E-001 through E-012; all gates currently lack independent review evidence by design.
+- A successful Vercel build or database health check is NOT a product release pass.
+- As of the review, Neon main held 0 business tables and the isolated schema-test branch held 13 tables; no migration was applied.
+- SMTP, cross-tenant authorization, installer entitlement, initial Admin security, session revocation, server pricing and browser end-to-end tests remain blocked/pending.
+- The manual evidence-gate CI execution itself is not claimed successful; once enabled, the expected outcome before clearance is FAIL/NO-GO.
+
+### Rollback target
+- Discard this isolated QA branch if needed. Do not change the stable Production alias; retain `dpl_4mtJw7zSWbnQ6SZbRckvTLqwAMGP` as the last observed stable deployment ID, subject to release provenance confirmation.
