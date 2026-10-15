@@ -12,7 +12,7 @@ async function loadSession(req) {
   if (!token) return null;
   const r = await db.query(
     "SELECT s.id session_id,s.expires_at,u.id,u.email,u.display_name,u.status,u.is_platform_admin,u.locale " +
-    "FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at > ?",
+    "FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at > ? AND u.status='active'",
     [token, new Date()]
   );
   const user = r.rows[0] || null;
