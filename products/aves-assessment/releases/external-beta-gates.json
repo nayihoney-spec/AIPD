@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "product": "Aves Assessment",
+  "candidate": "release/aves-assessment-2026-10-16-beta",
+  "releaseTarget": "2026-10-16T04:00:00Z",
+  "assessmentAsOf": "2026-10-15T16:04:00Z",
+  "decision": "NO-GO",
+  "approvedBy": "",
+  "approvedAt": null,
+  "scope": "External Beta; this file is an unapproved evidence register. Build/READY and schema presence do not establish feature or security acceptance.",
+  "gates": [
+    {
+      "id": "E-001",
+      "description": "Initial Platform Admin provisioning is restricted and single-use",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-002",
+      "description": "Formal Quote issuance is authorized, server-priced, and snapshot-immutable",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-003",
+      "description": "Organization, assessment, and user authorization are isolated",
+      "status": "pending",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-004",
+      "description": "Invitation and grant effective/expiry windows are enforced",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-005",
+      "description": "Session revocation, CSRF protection, and login abuse controls pass",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-006",
+      "description": "SMTP invite/expiry/reminder/quote queue delivery and failure tests pass",
+      "status": "pending",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-007",
+      "description": "Authorized installer download and fresh local-install tests pass",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-008",
+      "description": "Candidate source provenance, stable alias, and rollback are verified",
+      "status": "pending",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-009",
+      "description": "Database migration scope and approved environment are verified",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-010",
+      "description": "Six-step and Admin-configurable end-to-end regression passes",
+      "status": "pending",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-011",
+      "description": "External user access and deployment smoke tests pass",
+      "status": "blocked",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "E-012",
+      "description": "Persistent assessment/API and frozen quote/configuration versions pass",
+      "status": "pending",
+      "evidence": [],
+      "reviewedBy": "",
+      "reviewedAt": null
+    }
+  ],
+  "notes": [
+    "No P0 gate is marked passed without repeatable evidence and independent review.",
+    "Neon main: 0 public business tables; tested migration branch: 13 tables. Production migration remains unapproved.",
+    "Current production Vercel project latest deployment: dpl_4mtJw7zSWbnQ6SZbRckvTLqwAMGP; no alias promotion authorized.",
+    "QA preview READY is not an authorization, functional, SMTP, installer or external-access smoke-test pass.",
+    "Do not place credentials, invitation tokens, customer data, or detailed vulnerability reproduction in this public repository."
+  ]
+}
